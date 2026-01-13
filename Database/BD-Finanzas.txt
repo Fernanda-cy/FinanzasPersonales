@@ -1,0 +1,93 @@
+DROP DATABASE  Finanzas;
+CREATE DATABASE  Finanzas;
+USE Finanzas;
+
+-- 1. TABLA DE USUARIOS
+-- Cambiamos 'contraseña' por 'password' para evitar errores de caracteres
+CREATE TABLE Usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+-- 2. TABLA DE ROLES
+-- Cambiamos el nombre a 'Usuario_roles' para que coincida con la @Entity de Java
+CREATE TABLE Usuario_roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    rol VARCHAR(255) NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
+);
+
+-- 3. TABLA DE CUENTAS
+CREATE TABLE Cuenta (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    saldo DECIMAL(10,2) DEFAULT 0.00,
+    FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
+);
+
+-- 4. TABLA DE TRANSACCIONES
+CREATE TABLE Transaccion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cuenta_id INT NOT NULL,
+    tipo ENUM('INGRESO', 'GASTO') NOT NULL,
+    categoria VARCHAR(50),
+    monto DECIMAL(10,2) NOT NULL,
+    fecha DATE NOT NULL,
+    descripcion VARCHAR(255),
+    FOREIGN KEY (cuenta_id) REFERENCES Cuenta(id) ON DELETE CASCADE
+);
+------------------
+USE Finanzas;
+
+-- 1. LIMPIEZA TOTAL (Para empezar limpio y sin errores de IDs duplicados)
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE Transaccion;
+TRUNCATE TABLE Cuenta;
+TRUNCATE TABLE Usuario_roles;
+TRUNCATE TABLE Usuario;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 2. INSERTAR USUARIOS
+-- MANTENEMOS TUS ORIGINALES (IDs 1 y 2) y agregamos nuevos (3 y 4)
+INSERT INTO Usuario (id, nombre, correo, password) VALUES
+(1, 'Fernanda Usuario', 'fernanda@mail.com', '$2a$10$AkGknIo5cLJZQR.60ejYxO1UrxzIL8fVKreg7Q4zfaFFcWt3kAas6'),
+(2, 'Admin Principal', 'admin@mail.com', '$2a$10$AkGknIo5cLJZQR.60ejYxO1UrxzIL8fVKreg7Q4zfaFFcWt3kAas6'),
+(3, 'Carlos Cliente', 'carlos@mail.com', '$2a$10$AkGknIo5cLJZQR.60ejYxO1UrxzIL8fVKreg7Q4zfaFFcWt3kAas6'),
+(4, 'Ana Ventas', 'ana@mail.com', '$2a$10$AkGknIo5cLJZQR.60ejYxO1UrxzIL8fVKreg7Q4zfaFFcWt3kAas6');
+
+-- 3. INSERTAR ROLES
+-- Fernanda y los nuevos son USER, Admin es ADMIN
+INSERT INTO Usuario_roles (usuario_id, rol) VALUES 
+(1, 'ROLE_USER'),
+(2, 'ROLE_ADMIN'),
+(3, 'ROLE_USER'),
+(4, 'ROLE_USER');
+
+-- 4. INSERTAR CUENTAS
+-- Fernanda (ID 1) mantiene su 'Billetera Personal' y le agregamos una de Banco
+INSERT INTO Cuenta (id, usuario_id, nombre, tipo, saldo) VALUES 
+(1, 1, 'Billetera Personal', 'Efectivo', 1000.00),
+(2, 1, 'Ahorros BCP', 'Debito', 4500.00),
+-- Cuentas para los usuarios de relleno
+(3, 3, 'Cuenta Sueldo', 'Debito', 1200.00),
+(4, 4, 'Caja Chica', 'Efectivo', 300.00);
+
+-- 5. INSERTAR TRANSACCIONES
+-- Agregamos tu 'Almuerzo de hoy' original y más historial para las gráficas
+INSERT INTO Transaccion (cuenta_id, tipo, categoria, monto, fecha, descripcion) VALUES
+-- Movimientos de Fernanda (ID Cuenta 1 y 2)
+(1, 'GASTO', 'Comida', 50.00, CURDATE(), 'Almuerzo de hoy'),
+(1, 'GASTO', 'Transporte', 15.00, DATE_SUB(CURDATE(), INTERVAL 1 DAY), 'Taxi al trabajo'),
+(1, 'INGRESO', 'Freelance', 150.00, DATE_SUB(CURDATE(), INTERVAL 3 DAY), 'Diseño de Logo'),
+(2, 'GASTO', 'Servicios', 120.00, DATE_SUB(CURDATE(), INTERVAL 5 DAY), 'Pago de Luz'),
+(2, 'INGRESO', 'Nomina', 2500.00, DATE_SUB(CURDATE(), INTERVAL 15 DAY), 'Sueldo Mensual'),
+
+-- Movimientos de relleno para Carlos
+(3, 'GASTO', 'Ocio', 80.00, DATE_SUB(CURDATE(), INTERVAL 2 DAY), 'Cine'),
+-- Movimientos de relleno para Ana
+(4, 'GASTO', 'Comida', 12.50, CURDATE(), 'Café');

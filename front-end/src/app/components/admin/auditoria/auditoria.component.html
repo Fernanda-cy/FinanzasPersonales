@@ -1,0 +1,65 @@
+<div class="min-h-screen bg-gray-100 p-8">
+  <div class="max-w-5xl mx-auto">
+    
+    <button routerLink="/admin/panel" class="mb-6 text-blue-600 font-medium hover:underline flex items-center gap-2">
+      ⬅️ Volver al Panel
+    </button>
+
+    <div class="bg-white p-8 rounded-2xl shadow-lg">
+      
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">🕵️ Auditoría de Usuario: ID #{{usuarioId}}</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="bg-green-50 p-4 rounded-xl border border-green-200 text-center shadow-sm">
+          <p class="text-xs text-green-600 font-bold uppercase tracking-wider">Total Ingresos</p>
+          <p class="text-2xl font-black text-green-700">{{ calcularTotal('INGRESO') | currency }}</p>
+        </div>
+        <div class="bg-red-50 p-4 rounded-xl border border-red-200 text-center shadow-sm">
+          <p class="text-xs text-red-600 font-bold uppercase tracking-wider">Total Gastos</p>
+          <p class="text-2xl font-black text-red-700">{{ calcularTotal('GASTO') | currency }}</p>
+        </div>
+      </div>
+
+      <div class="mb-10 p-6 bg-gray-50 rounded-xl border border-gray-100" *ngIf="transacciones.length > 0">
+        <h3 class="text-center text-sm font-bold text-gray-500 uppercase mb-4">Distribución Visual</h3>
+        <div style="display: block; position: relative; height: 300px;">
+          <canvas id="graficoAuditoria"></canvas> 
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 border-b">
+              <th class="p-4 text-gray-600 text-sm">Fecha</th>
+              <th class="p-4 text-gray-600 text-sm">Categoría</th>
+              <th class="p-4 text-gray-600 text-sm">Tipo</th>
+              <th class="p-4 text-gray-600 text-sm text-right">Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of transacciones" class="border-b hover:bg-gray-50 transition text-sm">
+              <td class="p-4 text-gray-500">{{ t.fecha }}</td>
+              <td class="p-4 font-medium text-gray-700">{{ t.categoria }}</td>
+              <td class="p-4">
+                <span [ngClass]="t.tipo.toUpperCase() === 'INGRESO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" 
+                      class="px-2 py-1 rounded-full text-xs font-bold uppercase">
+                  {{ t.tipo }}
+                </span>
+              </td>
+              <td class="p-4 text-right font-mono font-bold" [ngClass]="t.tipo.toUpperCase() === 'INGRESO' ? 'text-green-600' : 'text-red-600'">
+                {{ t.tipo.toUpperCase() === 'INGRESO' ? '+' : '-' }}{{ t.monto | currency }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="transacciones.length === 0" class="text-center py-12 text-gray-400">
+        <div class="text-5xl mb-4">📁</div>
+        <p class="font-medium">Este usuario no tiene transacciones registradas.</p>
+      </div>
+
+    </div>
+  </div>
+</div>

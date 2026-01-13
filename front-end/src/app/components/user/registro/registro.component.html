@@ -1,0 +1,43 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
+    
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Registrar Movimiento</h2>
+      <a href="/dashboard" class="text-sm text-blue-600 hover:underline">← Volver al Resumen</a>
+    </div>
+
+    <form (ngSubmit)="guardar()">
+      <div class="mb-4">
+        <label class="block text-gray-700 font-bold mb-2">Descripción</label>
+        <input type="text" [(ngModel)]="transaccion.descripcion" name="desc" 
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+               placeholder="Ej. Salario, Pizza, Taxi..." required>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 font-bold mb-2">Monto ($)</label>
+        <input type="number" [(ngModel)]="transaccion.monto" name="monto" 
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 font-bold mb-2">Tipo de Movimiento</label>
+        <div class="flex gap-4">
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" [(ngModel)]="transaccion.tipo" name="tipo" value="INGRESO" class="mr-2">
+            <span class="text-green-600 font-bold">💰 Ingreso</span>
+          </label>
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" [(ngModel)]="transaccion.tipo" name="tipo" value="GASTO" class="mr-2">
+            <span class="text-red-600 font-bold">💸 Gasto</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition">
+        Guardar Transacción
+      </button>
+    </form>
+
+  </div>
+</div>
